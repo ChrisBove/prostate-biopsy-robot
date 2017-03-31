@@ -3,53 +3,60 @@
 
 int main( int argc, char** argv )
 {
-
-  ros::init(argc, argv, "talker");
+  ros::init(argc, argv, "gelitan");
   ros::NodeHandle n;
-  ros::Publisher pubTrackMarkers;
-  pubTrackMarkers = n.advertise<visualization_msgs::Marker>("/track_markers",1, true);
-  visualization_msgs::Marker markerMsg;
+  ros::Rate r(1);
+  ros::Publisher marker_pub = n.advertise<visualization_msgs::Marker>("gelitan", 1);
 
-  markerMsg.header.frame_id  = "/trackMarkers_frame";
-  markerMsg.ns = "trackMarkers";
-  markerMsg.action = visualization_msgs::Marker::ADD;
-  markerMsg.pose.orientation.w = 1.0;
-  markerMsg.type = visualization_msgs::Marker::CUBE_LIST;
-  markerMsg.scale.x = 0.8f;
-  markerMsg.scale.y = 0.8f;
-  markerMsg.scale.z = 0.8f;
-  if (true){
-      markerMsg.color.r = 0;
-      markerMsg.color.g = 1;
-      markerMsg.color.b = 0;
-      markerMsg.color.a = 1;
-  }
 
-  for (int i=0; i<20; i++)
+  while (ros::ok())
   {
-    for(int j= -10; j < 10; j++  )
-    {
-      for (int k = -10; k < 10; k++)
-      {
-          geometry_msgs::Point temp;
-          temp.x = i;
-          temp.y = j;
-          temp.z = k;
-          markerMsg.points.push_back(temp);
-          std_msgs::ColorRGBA c;
-          c.r = 0;//(float)i/10.0;
-          c.g = 0;
-          c.b = 0;
-          c.a = 0.5;
-          markerMsg.colors.push_back(c);
-      }
-    }
-  }
+    visualization_msgs::Marker marker;
+    // Set the frame ID and timestamp.  See the TF tutorials for information on these.
+    marker.header.frame_id = "/gelitan";
+    marker.header.stamp = ros::Time::now();
 
-  pubTrackMarkers.publish(markerMsg);
-  //markerMsg.points=points.clear();
-  //markerMsg.colors=colors.clear();
-  while (ros::ok()) {
-      ros::spin();
+    // Set the namespace and id for this marker.  This serves to create a unique ID
+    // Any marker sent with the same namespace and id will overwrite the old one
+    marker.ns = "gelitan";
+    marker.id = 0;
+
+    // Set the marker type.  Initially this is CUBE, and cycles between that and SPHERE, ARROW, and CYLINDER
+    marker.type = visualization_msgs::Marker::CUBE;
+;
+
+    // Set the marker action.  Options are ADD, DELETE, and new in ROS Indigo: 3 (DELETEALL)
+    marker.action = visualization_msgs::Marker::ADD;
+
+    // Set the pose of the marker.  This is a full 6DOF pose relative to the frame/time specified in the header
+    marker.pose.position.x = -5.0;
+    marker.pose.position.y = 0;
+    marker.pose.position.z = 0;
+    marker.pose.orientation.x = 0.0;
+    marker.pose.orientation.y = 0.0;
+    marker.pose.orientation.z = 0.0;
+    marker.pose.orientation.w = 1.0;
+
+    // Set the scale of the marker -- 1x1x1 here means 1m on a side
+    marker.scale.x = 10.0;
+    marker.scale.y = 5.0;
+    marker.scale.z = 5.0;
+
+    // Set the color -- be sure to set alpha to something non-zero!
+    marker.color.r = 1.0f;
+    marker.color.g = 0.0f;
+    marker.color.b = 0.0f;
+    marker.color.a = .5;
+
+    marker.lifetime = ros::Duration();
+
+    // Publish the marker
+
+    marker_pub.publish(marker);
+
+    // Cycle between different shapes
+
+
+    r.sleep();
   }
 }
