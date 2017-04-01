@@ -139,6 +139,7 @@ include_directories(
 # add_executable(${PROJECT_NAME}_node src/pbb-visualization_node.cpp)
 add_executable(${PROJECT_NAME}_marker_node src/marker_node.cpp)
 add_executable(${PROJECT_NAME}_marker_example src/marker_example.cpp)
+add_executable(${PROJECT_NAME}_gelatin_marker src/gelatin_marker.cpp)
 
 ## Rename C++ executable without prefix
 ## The above recommended prefix causes long target names, the following renames the
@@ -146,12 +147,14 @@ add_executable(${PROJECT_NAME}_marker_example src/marker_example.cpp)
 ## e.g. "rosrun someones_pkg node" instead of "rosrun someones_pkg someones_pkg_node"
 set_target_properties(${PROJECT_NAME}_marker_node PROPERTIES OUTPUT_NAME marker_node PREFIX "")
 set_target_properties(${PROJECT_NAME}_marker_example PROPERTIES OUTPUT_NAME marker_example PREFIX "")
+set_target_properties(${PROJECT_NAME}_gelatin_marker PROPERTIES OUTPUT_NAME galatin_marker PREFIX "")
 
 ## Add cmake target dependencies of the executable
 ## same as for the library above
 # add_dependencies(${PROJECT_NAME}_node ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
 add_dependencies(${PROJECT_NAME}_marker_node ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
 add_dependencies(${PROJECT_NAME}_marker_example ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
+add_dependencies(${PROJECT_NAME}_gelatin_marker ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
 
 ## Specify libraries to link a library or executable target against
 # target_link_libraries(${PROJECT_NAME}_node
@@ -163,6 +166,10 @@ target_link_libraries(${PROJECT_NAME}_marker_node
 )
 
 target_link_libraries(${PROJECT_NAME}_marker_example
+  ${catkin_LIBRARIES}
+)
+
+target_link_libraries(${PROJECT_NAME}_gelatin_marker
   ${catkin_LIBRARIES}
 )
 
