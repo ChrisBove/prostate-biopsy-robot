@@ -3,22 +3,22 @@
 
 int main( int argc, char** argv )
 {
-  ros::init(argc, argv, "gelitan");
+  ros::init(argc, argv, "gelatin");
   ros::NodeHandle n;
   ros::Rate r(1);
-  ros::Publisher marker_pub = n.advertise<visualization_msgs::Marker>("gelitan", 1);
+  ros::Publisher marker_pub = n.advertise<visualization_msgs::Marker>("gelatin", 1);
 
 
   while (ros::ok())
   {
     visualization_msgs::Marker marker;
     // Set the frame ID and timestamp.  See the TF tutorials for information on these.
-    marker.header.frame_id = "/gelitan";
+    marker.header.frame_id = "/gelatin";
     marker.header.stamp = ros::Time::now();
 
     // Set the namespace and id for this marker.  This serves to create a unique ID
     // Any marker sent with the same namespace and id will overwrite the old one
-    marker.ns = "gelitan";
+    marker.ns = "gelatin";
     marker.id = 0;
 
     // Set the marker type.  Initially this is CUBE, and cycles between that and SPHERE, ARROW, and CYLINDER

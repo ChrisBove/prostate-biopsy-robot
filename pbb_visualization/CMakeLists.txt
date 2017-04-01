@@ -147,7 +147,7 @@ add_executable(${PROJECT_NAME}_gelatin_marker src/gelatin_marker.cpp)
 ## e.g. "rosrun someones_pkg node" instead of "rosrun someones_pkg someones_pkg_node"
 set_target_properties(${PROJECT_NAME}_marker_node PROPERTIES OUTPUT_NAME marker_node PREFIX "")
 set_target_properties(${PROJECT_NAME}_marker_example PROPERTIES OUTPUT_NAME marker_example PREFIX "")
-set_target_properties(${PROJECT_NAME}_gelatin_marker PROPERTIES OUTPUT_NAME galatin_marker PREFIX "")
+set_target_properties(${PROJECT_NAME}_gelatin_marker PROPERTIES OUTPUT_NAME gelatin_marker PREFIX "")
 
 ## Add cmake target dependencies of the executable
 ## same as for the library above
