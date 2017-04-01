@@ -52,17 +52,18 @@ int main(int argc, char** argv)
 
   // create an interactive marker for our server
   visualization_msgs::InteractiveMarker int_marker;
-  int_marker.header.frame_id = "map";
+  int_marker.header.frame_id = "gelatin";
   int_marker.header.stamp=ros::Time::now();
   int_marker.name = "start_marker";
   int_marker.description = "Goal Marker";
+  int_marker.scale = 0.05;
 
   // create a grey box marker
   visualization_msgs::Marker box_marker;
   box_marker.type = visualization_msgs::Marker::SPHERE;
-  box_marker.scale.x = 0.1;
-  box_marker.scale.y = 0.1;
-  box_marker.scale.z = 0.1;
+  box_marker.scale.x = 0.01;
+  box_marker.scale.y = 0.01;
+  box_marker.scale.z = 0.01;
   box_marker.color.r = 0.0;
   box_marker.color.g = 1.0;
   box_marker.color.b = 0.0;
