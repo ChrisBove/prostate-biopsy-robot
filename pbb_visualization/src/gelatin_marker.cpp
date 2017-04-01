@@ -46,7 +46,7 @@ int main( int argc, char** argv )
     marker.color.r = 1.0f;
     marker.color.g = 1.0f;
     marker.color.b = 1.0f;
-    marker.color.a = .5;
+    marker.color.a = 0.3;
 
     marker.lifetime = ros::Duration();
 
