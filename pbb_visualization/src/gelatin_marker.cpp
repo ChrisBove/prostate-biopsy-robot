@@ -29,7 +29,7 @@ int main( int argc, char** argv )
     marker.action = visualization_msgs::Marker::ADD;
 
     // Set the pose of the marker.  This is a full 6DOF pose relative to the frame/time specified in the header
-    marker.pose.position.x = -5.0;
+    marker.pose.position.x = -0.10;
     marker.pose.position.y = 0;
     marker.pose.position.z = 0;
     marker.pose.orientation.x = 0.0;
@@ -38,14 +38,14 @@ int main( int argc, char** argv )
     marker.pose.orientation.w = 1.0;
 
     // Set the scale of the marker -- 1x1x1 here means 1m on a side
-    marker.scale.x = 10.0;
-    marker.scale.y = 5.0;
-    marker.scale.z = 5.0;
+    marker.scale.x = 0.20;
+    marker.scale.y = 0.10;
+    marker.scale.z = 0.10;
 
     // Set the color -- be sure to set alpha to something non-zero!
     marker.color.r = 1.0f;
-    marker.color.g = 0.0f;
-    marker.color.b = 0.0f;
+    marker.color.g = 1.0f;
+    marker.color.b = 1.0f;
     marker.color.a = .5;
 
     marker.lifetime = ros::Duration();
