@@ -140,6 +140,7 @@ include_directories(
 add_executable(${PROJECT_NAME}_marker_node src/marker_node.cpp)
 add_executable(${PROJECT_NAME}_marker_example src/marker_example.cpp)
 add_executable(${PROJECT_NAME}_gelatin_marker src/gelatin_marker.cpp)
+add_executable(${PROJECT_NAME}_goal_marker src/goal_marker_node.cpp)
 
 ## Rename C++ executable without prefix
 ## The above recommended prefix causes long target names, the following renames the
@@ -148,6 +149,7 @@ add_executable(${PROJECT_NAME}_gelatin_marker src/gelatin_marker.cpp)
 set_target_properties(${PROJECT_NAME}_marker_node PROPERTIES OUTPUT_NAME marker_node PREFIX "")
 set_target_properties(${PROJECT_NAME}_marker_example PROPERTIES OUTPUT_NAME marker_example PREFIX "")
 set_target_properties(${PROJECT_NAME}_gelatin_marker PROPERTIES OUTPUT_NAME gelatin_marker PREFIX "")
+set_target_properties(${PROJECT_NAME}_goal_marker PROPERTIES OUTPUT_NAME goal_marker PREFIX "")
 
 ## Add cmake target dependencies of the executable
 ## same as for the library above
@@ -155,6 +157,7 @@ set_target_properties(${PROJECT_NAME}_gelatin_marker PROPERTIES OUTPUT_NAME gela
 add_dependencies(${PROJECT_NAME}_marker_node ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
 add_dependencies(${PROJECT_NAME}_marker_example ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
 add_dependencies(${PROJECT_NAME}_gelatin_marker ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
+add_dependencies(${PROJECT_NAME}_goal_marker ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
 
 ## Specify libraries to link a library or executable target against
 # target_link_libraries(${PROJECT_NAME}_node
@@ -170,6 +173,10 @@ target_link_libraries(${PROJECT_NAME}_marker_example
 )
 
 target_link_libraries(${PROJECT_NAME}_gelatin_marker
+  ${catkin_LIBRARIES}
+)
+
+target_link_libraries(${PROJECT_NAME}_goal_marker
   ${catkin_LIBRARIES}
 )
 

@@ -1,3 +1,6 @@
+// This is bad - the one marker node should be parameterized and configured at launch for whether
+// its a goal or a start node.
+
 /*
  * Modified from the below code:
  * Copyright (c) 2011, Willow Garage, Inc.
@@ -45,17 +48,17 @@ void processFeedback(
 
 int main(int argc, char** argv)
 {
-  ros::init(argc, argv, "marker_node");
+  ros::init(argc, argv, "goal_marker_node");
 
   // create an interactive marker server on the topic namespace simple_marker
-  interactive_markers::InteractiveMarkerServer server("marker_node");
+  interactive_markers::InteractiveMarkerServer server("goal_marker_node");
 
   // create an interactive marker for our server
   visualization_msgs::InteractiveMarker int_marker;
   int_marker.header.frame_id = "gelatin";
   int_marker.header.stamp=ros::Time::now();
-  int_marker.name = "start_marker";
-  int_marker.description = "Start Marker";
+  int_marker.name = "goal_marker";
+  int_marker.description = "Goal Marker";
   int_marker.scale = 0.05;
 
   // create a grey box marker
@@ -64,8 +67,8 @@ int main(int argc, char** argv)
   box_marker.scale.x = 0.01;
   box_marker.scale.y = 0.01;
   box_marker.scale.z = 0.01;
-  box_marker.color.r = 0.0;
-  box_marker.color.g = 1.0;
+  box_marker.color.r = 1.0;
+  box_marker.color.g = 0.0;
   box_marker.color.b = 0.0;
   box_marker.color.a = 1.0;
 
