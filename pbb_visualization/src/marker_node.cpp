@@ -78,13 +78,6 @@ int main(int argc, char** argv)
   int_marker.controls.push_back( box_control );
 
   visualization_msgs::InteractiveMarkerControl control;
-  control.orientation.w = 1;
-  control.orientation.x = 1;
-  control.orientation.y = 0;
-  control.orientation.z = 0;
-  control.name = "move_x";
-  control.interaction_mode = InteractiveMarkerControl::MOVE_AXIS;
-  int_marker.controls.push_back(control);
 
   control.orientation.w = 1;
   control.orientation.x = 0;
