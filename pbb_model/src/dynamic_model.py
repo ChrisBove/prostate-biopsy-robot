@@ -10,7 +10,7 @@ from std_msgs.msg import String
 
 
 class DynamicModel(object):
-    """docstring fo dynamic_model."""
+    """ fo dynamic_model."""
 
     def __init__(self):
 
@@ -26,22 +26,52 @@ class DynamicModel(object):
         self._pho = 6.453
         self._b = 10  # coef of friction
         self._beta = 4.753 * 10**(-3)
-        self._radius = 13.698630137  # kappa
+        self._kappa = 13.698630137  # kappa
 
         self._Cl =  np.ones((1, self._N))
         for ii in xrange(25):
 	        np.put(self._Cl, [ii], [ (-1)**ii ] )
         np.put(self._Cl, [0], [ .5 ] )
 
+        self._s_state = []
+        self._q_state = np.matrix
 
 
-    def dynamics(self, u1, u2):
+
+    def update(self, u1, u2):
+
+        A = self.get_Amat(l,u1)
+        B = self.get_Bmat(l,u1)
+        C = self.get_Cmat(A)
+        D = self.get_Dmat(A)
+        (n self._s_state) = self.update_S(u1,u2,C,D,T)
+        self._q_state = A*self._q_state + B*u
+
+    def update_S(self, u1, u2, C, D,T):
+        """Update the S state"""
+
+        # this are the unit vectors to move it into the right frame
         e1 = np.array([[1],[0],[0]])
         e3 = np.array([[0],[0],[1]])
-        V1 = np.concatenate(([[e3],[k*e1]]), axis=0)
+        V1 = np.concatenate(([[e3],[self._k*e1]]), axis=0)
         V2 = np.concatenate(([[0],[0],[0]],e3), axis=0)
+        V1_hat = np.concatenate((isomorphic(V1[1]),V1[0]), axis=1)
+        V1_hat = np.vstack((V1_hat,np.array([0,0,0,0])))
+        V2_hat = np.concatenate((isomorphic(V2[3:6]),V2[0:3]), axis=1)
+        V2_hat = np.vstack((V2_hat,np.array([0,0,0,0])))
+        # this is where the state is updated
+        J = self.get_jacobian(self._s_state[4],self._s_state[5])
+        V = J*(V1_hat*u1 + V2_hat*( C*self._q_state + D*u2) )*T
+        new_state = p.array([self._s_state[:,:].dot(expm(V))])
+        n = ((new_state[0,0:3,0:3]*l2).dot(e3)+(new_state[0,0:3,3]).reshape(3,1))
 
-        sdot
+        return (n, new_state)
+
+
+    def isomorphic(x):
+        return np.array([[0,-x.item(2),x.item(1)],
+    		[x.item(2),0,-x.item(0)],
+    		[-x.item(1),x.item(0),0]])
 
     def update_l(self, l,v ):
 
