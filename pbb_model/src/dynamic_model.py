@@ -15,6 +15,7 @@ class DynamicModel(object):
     def __init__(self):
 
         self._l = 10
+        self._depth = 0
         self._Cl = []
         self._P =  np.asmatrix( 2 / l * np.ones((self._N, 1)))
         self._C0 = np.asmatrix(  np.ones((1, self._N)))
@@ -38,14 +39,21 @@ class DynamicModel(object):
 
 
 
-    def update(self, u1, u2):
-
-        A = self.get_Amat(l,u1)
-        B = self.get_Bmat(l,u1)
+    def update(self, u1, u2,dt):
+        """Updates the systems"""
+        self.update_depth()
+        A = self.get_Amat(u1)
+        B = self.get_Bmat(u1)
         C = self.get_Cmat(A)
         D = self.get_Dmat(A)
-        (n self._s_state) = self.update_S(u1,u2,C,D,T)
+        (n, self._s_state) = self.update_S(u1,u2,C,D,T)
         self._q_state = A*self._q_state + B*u
+        return (self._s_state, self._q_state  )
+
+
+    def update_depth(self, v,dt):
+        """This updates the insertion depth"""
+        self._depth = self._depth + v*dt
 
     def update_S(self, u1, u2, C, D,T):
         """Update the S state"""
@@ -73,27 +81,23 @@ class DynamicModel(object):
     		[x.item(2),0,-x.item(0)],
     		[-x.item(1),x.item(0),0]])
 
-    def update_l(self, l,v ):
 
-        dt = .1
-        return l + v*dt
-
-    def get_Amat(self, l, v):
+    def get_Amat(self, v):
         """This function calculate the A matrix"""
 
-        invD = self.get_invD(l.v)
-        K = self.get_K(l, v)
+        invD = self.get_invD(v)
+        K = self.get_K( v)
         # this is link a sring constant
-        lumped_sping = (self._J * self._G) / (self._l - l)
+        lumped_sping = (self._J * self._G) / (self._l - self._depth)
         makeMatrix = K + lumped_sping * self._P * self._C0
         A = -invD * makeMatrix
         return A
 
     def get_Bmat(self,l,v):
         """This function calculate the B matrix"""
-        invD = self.get_invD(l.v)
+        invD = self.get_invD(v)
         # this is link a sring constant
-        lumped_sping = (self._J * self._G) / (self._l - l)
+        lumped_sping = (self._J * self._G) / (self._l - self._depth)
         B = invD * lumped_sping * self._P
         return B
 
@@ -105,12 +109,12 @@ class DynamicModel(object):
         """This function returns the D matrix"""
         return self._Cl*B
 
-    def get_invD(self, l, v):
+    def get_invD(self,  v):
         """get the D matrix"""
 
         d = self.get_d_coef(l, v):
         D = numpy.zeros((self._N, self._N))
-        coef = (self._J * self._pho * v) / l
+        coef = (self._J * self._pho * v) / self._depth
 
         for i in xrange(1, self_N):
             for j in xrange(1, self_N):
@@ -135,19 +139,19 @@ class DynamicModel(object):
                                        * (j - 1)**2) / ((i - j) * (i + j - 2))
         return d
 
-    def get_K(self, l, v):
+    def get_K(self, v):
         """get the K matrix"""
 
         d = self.get_k_coef(l):
         K = numpy.zeros((self._N, self._N))
-        coef = (self._J * self._pho * v * v) / (l * l)
+        coef = (self._J * self._pho * v * v) / (self._depth**2)
 
         for i in xrange(1, self_N):
             for j in xrange(1, self_N):
                 K[i][j] = coef * d[i][j]
         return np.asmatrix( K )
 
-    def get_k_coef(self, l):
+    def get_k_coef(self):
         """This function get the little k coef """
         k = [][]
         for i in xrange(1, self._N):
@@ -192,7 +196,3 @@ class DynamicModel(object):
         Q = T * m.cos(lamada * alpha) - 0.5 * Kt * a * a * m.tan(beta)
 
         return (P, Q)
-
-
-if __name__ == '__main__':
-    rospy.init_node('dynamic_model', anonymous=True)
