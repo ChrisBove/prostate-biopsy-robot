@@ -2,11 +2,10 @@
 """@package docstring
     This is the dynamic model of the needle
 """
-import rospy
 import copy
 import math as m
 import numpy as np
-from std_msgs.msg import String
+from scipy.linalg import expm
 
 
 class DynamicModel(object):
@@ -14,10 +13,11 @@ class DynamicModel(object):
 
     def __init__(self):
 
-        self._l = 10
+        self._l = 10.0
         self._depth = 0
-        self._N = 5
-        self._P = np.asmatrix(2 / self._l * np.ones((self._N, 1)))
+        self._N = 4
+        self._P = np.asmatrix( (2.0 / self._l) * np.ones((self._N, 1)))
+
         self._C0 = np.asmatrix(np.ones((1, self._N)))
         np.put(self._C0, [0], [0.5])
         #(self._P, self._Q ) = self.get_needle_forces()
@@ -34,20 +34,22 @@ class DynamicModel(object):
             np.put(self._Cl, [ii], [(-1)**ii])
         np.put(self._Cl, [0], [.5])
 
-        self._s_state = np.matrix([[0], [0], [0], [0], [0], [0]])
-        self._q_state = np.asmatrix(np.zeros((self._N)))
+        self._s_state =  np.array( [[1,0,0,0],[0,1,0,0],[0,0,1,0],[0,0,0,1]])
+        self._q_state = np.asmatrix(np.zeros((self._N, 1)))
 
     def update(self, u1, u2, dt):
-        """Updates the systems"""
-        print "hello"
-        self.update_depth(u1, dt)
 
+        """Updates the systems"""
+
+        self.update_depth(u1, dt)
         A = self.get_Amat(u1)
+
         B = self.get_Bmat(u1)
         C = self.get_Cmat(A)
         D = self.get_Dmat(A)
         (n, self._s_state) = self.update_S(u1, u2, C, D, dt)
-        self._q_state = A * self._q_state + B * u
+
+        self._q_state = A * self._q_state + B * u2
         return (self._s_state, self._q_state)
 
     def update_depth(self, v, dt):
@@ -56,26 +58,24 @@ class DynamicModel(object):
 
     def update_S(self, u1, u2, C, D, dt):
         """Update the S state"""
-
+        l2 =  0.023775
+        state = self._s_state
         # this are the unit vectors to move it into the right frame
-        e1 = np.array([[1], [0], [0]])
-        e3 = np.array([[0], [0], [1]])
-        V1 = np.concatenate(([[e3], [self._kappa * e1]]), axis=0)
-        V2 = np.concatenate(([[0], [0], [0]], e3), axis=0)
-        V1_hat = np.concatenate((self.isomorphic(V1[1]), V1[0]), axis=1)
-        V1_hat = np.vstack((V1_hat, np.array([0, 0, 0, 0])))
-        V2_hat = np.concatenate((self.isomorphic(V2[3:6]), V2[0:3]), axis=1)
-        V2_hat = np.vstack((V2_hat, np.array([0, 0, 0, 0])))
-        # this is where the state is updated
-        J = self.get_jacobian(self._s_state[4], self._s_state[5])
-        V = J * (V1_hat * u1 + V2_hat * (C * self._q_state + D * u2)) * dt
-        new_state = p.array([self._s_state[:, :].dot(expm(V))])
-        n = ((new_state[0, 0:3, 0:3] * l2).dot(e3) +
-             (new_state[0, 0:3, 3]).reshape(3, 1))
+        e1 = np.array([[1],[0],[0]])
+        e3 = np.array([[0],[0],[1]])
+        V1 = np.concatenate(([[e3],[self._kappa*e1]]), axis=0)
+        V2 = np.concatenate(([[0],[0],[0]],e3), axis=0)
+        V1_hat = np.concatenate((self.isomorphic(V1[1]),V1[0]), axis=1)
+        V1_hat = np.vstack((V1_hat,np.array([0,0,0,0])))
+        V2_hat = np.concatenate((self.isomorphic(V2[3:6]),V2[0:3]), axis=1)
+        V2_hat = np.vstack((V2_hat,np.array([0,0,0,0])))
+        new_state = state[:, :].dot(expm((u1 * V1_hat +  ( C*self._q_state + D*u2) * V2_hat) * dt))
+        temp = np.array([new_state])
+        n = ((temp[0, 0:3, 0:3] * l2).dot(e3) + (temp[0, 0:3, 3]).reshape(3, 1))
 
         return (n, new_state)
 
-    def isomorphic(self,x):
+    def isomorphic(self, x):
         return np.array([[0, -x.item(2), x.item(1)],
                          [x.item(2), 0, -x.item(0)],
                          [-x.item(1), x.item(0), 0]])
@@ -87,9 +87,9 @@ class DynamicModel(object):
         K = self.get_K(v)
         # this is link a sring constant
         lumped_sping = (self._J * self._G) / (self._l - self._depth)
-        makeMatrix = K + lumped_sping * np.multiply(self._P,  self._C0)
-        print invD
-        A = np.multiply(invD ,makeMatrix)
+        makeMatrix = K + lumped_sping * self._P*self._C0
+
+        A = -invD*makeMatrix
         return A
 
     def get_Bmat(self, v):
@@ -97,16 +97,17 @@ class DynamicModel(object):
         invD = self.get_invD(v)
         # this is link a sring constant
         lumped_sping = (self._J * self._G) / (self._l - self._depth)
-        B =  np.multiply(invD , np.multiply(lumped_sping , self._P))
+        B = invD* lumped_sping*self._P
+
         return B
 
     def get_Cmat(self, A):
         """This function calculate the C matrix"""
-        return  np.multiply( self._Cl , A)
+        return self._Cl*A
 
     def get_Dmat(self, B):
         """This function returns the D matrix"""
-        return np.multiply(self._Cl, B)
+        return self._Cl*B
 
     def get_invD(self,  v):
         """get the D matrix"""

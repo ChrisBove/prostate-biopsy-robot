@@ -2,4 +2,12 @@
 import dynamic_model
 
 needle = dynamic_model.DynamicModel()
-print needle.update(2,2,.1)
+
+(s_state, q_state) =  needle.update(5,5,.1)
+print s_state
+print  "---------------------"
+print q_state
+(s_state, q_state) =  needle.update(5,5,.1)
+print s_state
+print "----------------------"
+print q_state
