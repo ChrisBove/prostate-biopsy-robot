@@ -46,7 +46,7 @@ class DynamicModel(object):
         B = self.get_Bmat(u1)
         C = self.get_Cmat(A)
         D = self.get_Dmat(A)
-        (n, self._s_state) = self.update_S(u1, u2, C, D, T)
+        (n, self._s_state) = self.update_S(u1, u2, C, D, dt)
         self._q_state = A * self._q_state + B * u
         return (self._s_state, self._q_state)
 
@@ -54,28 +54,28 @@ class DynamicModel(object):
         """This updates the insertion depth"""
         self._depth = self._depth + v * dt
 
-    def update_S(self, u1, u2, C, D, T):
+    def update_S(self, u1, u2, C, D, dt):
         """Update the S state"""
 
         # this are the unit vectors to move it into the right frame
         e1 = np.array([[1], [0], [0]])
         e3 = np.array([[0], [0], [1]])
-        V1 = np.concatenate(([[e3], [self._k * e1]]), axis=0)
+        V1 = np.concatenate(([[e3], [self._kappa * e1]]), axis=0)
         V2 = np.concatenate(([[0], [0], [0]], e3), axis=0)
-        V1_hat = np.concatenate((isomorphic(V1[1]), V1[0]), axis=1)
+        V1_hat = np.concatenate((self.isomorphic(V1[1]), V1[0]), axis=1)
         V1_hat = np.vstack((V1_hat, np.array([0, 0, 0, 0])))
-        V2_hat = np.concatenate((isomorphic(V2[3:6]), V2[0:3]), axis=1)
+        V2_hat = np.concatenate((self.isomorphic(V2[3:6]), V2[0:3]), axis=1)
         V2_hat = np.vstack((V2_hat, np.array([0, 0, 0, 0])))
         # this is where the state is updated
         J = self.get_jacobian(self._s_state[4], self._s_state[5])
-        V = J * (V1_hat * u1 + V2_hat * (C * self._q_state + D * u2)) * T
+        V = J * (V1_hat * u1 + V2_hat * (C * self._q_state + D * u2)) * dt
         new_state = p.array([self._s_state[:, :].dot(expm(V))])
         n = ((new_state[0, 0:3, 0:3] * l2).dot(e3) +
              (new_state[0, 0:3, 3]).reshape(3, 1))
 
         return (n, new_state)
 
-    def isomorphic(x):
+    def isomorphic(self,x):
         return np.array([[0, -x.item(2), x.item(1)],
                          [x.item(2), 0, -x.item(0)],
                          [-x.item(1), x.item(0), 0]])
@@ -87,25 +87,26 @@ class DynamicModel(object):
         K = self.get_K(v)
         # this is link a sring constant
         lumped_sping = (self._J * self._G) / (self._l - self._depth)
-        makeMatrix = K + lumped_sping * self._P * self._C0
-        A = invD * makeMatrix
+        makeMatrix = K + lumped_sping * np.multiply(self._P,  self._C0)
+        print invD
+        A = np.multiply(invD ,makeMatrix)
         return A
 
-    def get_Bmat(self, l, v):
+    def get_Bmat(self, v):
         """This function calculate the B matrix"""
         invD = self.get_invD(v)
         # this is link a sring constant
         lumped_sping = (self._J * self._G) / (self._l - self._depth)
-        B = invD * lumped_sping * self._P
+        B =  np.multiply(invD , np.multiply(lumped_sping , self._P))
         return B
 
     def get_Cmat(self, A):
         """This function calculate the C matrix"""
-        return self._Cl * A
+        return  np.multiply( self._Cl , A)
 
     def get_Dmat(self, B):
         """This function returns the D matrix"""
-        return self._Cl * B
+        return np.multiply(self._Cl, B)
 
     def get_invD(self,  v):
         """get the D matrix"""
@@ -118,8 +119,8 @@ class DynamicModel(object):
         for i in xrange(self._N):
             for j in xrange(self._N):
                 D[i][j] = coef * d[i][j]
-        print D
-        #return np.linalg.inv(np.asmatrix(D))
+
+        return np.linalg.pinv(np.asmatrix(D))
 
     def get_d_coef(self, v):
         """This function get the little d coef """
@@ -152,7 +153,7 @@ class DynamicModel(object):
                 K[i][j] = coef * k[i][j]
         return np.asmatrix(K)
 
-    def get_k_coef(self,v):
+    def get_k_coef(self, v):
         """This function get the little k coef """
         k = [[0 for i in xrange(self._N)] for i in xrange(self._N)]
         for i in xrange(1, self._N):
