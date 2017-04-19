@@ -17,13 +17,12 @@ class DynamicModel(object):
         self._depth = 0
         self._N = 4
         self._P = np.asmatrix( (2.0 / self._l) * np.ones((self._N, 1)))
-
         self._C0 = np.asmatrix(np.ones((1, self._N)))
         np.put(self._C0, [0], [0.5])
         #(self._P, self._Q ) = self.get_needle_forces()
 
         self._G = 1.841210  # shear mo(dulus
-        self._J = 1.5962 * 10**(-14)  # polar momemoment Interia
+        self._J = 1.5962 * 10**(-10)  # polar momemoment Interia
         self._pho = 6.453
         self._b = 10  # coef of friction
         self._beta = 4.753 * 10**(-3)
@@ -36,6 +35,7 @@ class DynamicModel(object):
 
         self._s_state =  np.array( [[1,0,0,0],[0,1,0,0],[0,0,1,0],[0,0,0,1]])
         self._q_state = np.asmatrix(np.zeros((self._N, 1)))
+        self._n = np.zeros((3,1))
 
     def update(self, u1, u2, dt):
 
@@ -43,14 +43,15 @@ class DynamicModel(object):
 
         self.update_depth(u1, dt)
         A = self.get_Amat(u1)
-
         B = self.get_Bmat(u1)
         C = self.get_Cmat(A)
-        D = self.get_Dmat(A)
-        (n, self._s_state) = self.update_S(u1, u2, C, D, dt)
+        D = self.get_Dmat(B)
+
+        (self._n, self._s_state) = self.update_S(u1, u2, C, D, dt)
 
         self._q_state = A * self._q_state + B * u2
-        return (self._s_state, self._q_state)
+        print self._q_state
+        return self._n
 
     def update_depth(self, v, dt):
         """This updates the insertion depth"""
@@ -69,7 +70,9 @@ class DynamicModel(object):
         V1_hat = np.vstack((V1_hat,np.array([0,0,0,0])))
         V2_hat = np.concatenate((self.isomorphic(V2[3:6]),V2[0:3]), axis=1)
         V2_hat = np.vstack((V2_hat,np.array([0,0,0,0])))
-        new_state = state[:, :].dot(expm((u1 * V1_hat +  ( C*self._q_state + D*u2) * V2_hat) * dt))
+        compinsation  =  np.asscalar (C*self._q_state + D*u2)
+        #print  "real input ",  compinsation
+        new_state = state[:, :].dot(expm(( V1_hat*u1 +   V2_hat*compinsation) * dt))
         temp = np.array([new_state])
         n = ((temp[0, 0:3, 0:3] * l2).dot(e3) + (temp[0, 0:3, 3]).reshape(3, 1))
 
@@ -93,12 +96,15 @@ class DynamicModel(object):
         return A
 
     def get_Bmat(self, v):
-        """This function calculate the B matrix"""
+        """This function calculate the 
+        
+        
+        B matrix"""
         invD = self.get_invD(v)
         # this is link a sring constant
         lumped_sping = (self._J * self._G) / (self._l - self._depth)
-        B = invD* lumped_sping*self._P
 
+        B = invD*self._P*lumped_sping
         return B
 
     def get_Cmat(self, A):
