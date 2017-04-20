@@ -13,7 +13,7 @@ class DynamicModel(object):
 
     def __init__(self):
 
-        self._l = 10.0
+        self._l = 4
         self._depth = 0
         self._N = 4
         self._P = np.asmatrix( (2.0 / self._l) * np.ones((self._N, 1)))
@@ -22,7 +22,7 @@ class DynamicModel(object):
         #(self._P, self._Q ) = self.get_needle_forces()
 
         self._G = 1.841210  # shear mo(dulus
-        self._J = 1.5962 * 10**(-10)  # polar momemoment Interia
+        self._J = 1.5962 * 10**(-14)  # polar momemoment Interia
         self._pho = 6.453
         self._b = 10  # coef of friction
         self._beta = 4.753 * 10**(-3)
@@ -46,7 +46,7 @@ class DynamicModel(object):
         B = self.get_Bmat(u1)
         C = self.get_Cmat(A)
         D = self.get_Dmat(B)
-
+        print B
         (self._n, self._s_state) = self.update_S(u1, u2, C, D, dt)
 
         self._q_state = A * self._q_state + B * u2
@@ -72,7 +72,7 @@ class DynamicModel(object):
         V2_hat = np.vstack((V2_hat,np.array([0,0,0,0])))
         compinsation  =  np.asscalar (C*self._q_state + D*u2)
         #print  "real input ",  compinsation
-        new_state = state[:, :].dot(expm(( V1_hat*u1 +   V2_hat*compinsation) * dt))
+        new_state = state[:, :].dot(expm(( u1*V1_hat +   compinsation*V2_hat) * dt))
         temp = np.array([new_state])
         n = ((temp[0, 0:3, 0:3] * l2).dot(e3) + (temp[0, 0:3, 3]).reshape(3, 1))
 
@@ -97,8 +97,6 @@ class DynamicModel(object):
 
     def get_Bmat(self, v):
         """This function calculate the 
-        
-        
         B matrix"""
         invD = self.get_invD(v)
         # this is link a sring constant
