@@ -9,4 +9,6 @@ Modeling and Control of Needle-Guiding Prostate Biopsy Robot - RBE 502 Final Pro
 You need Ubuntu 14.04 with ROS indigo installed. Within your catkin workspace, clone this repository and run `catkin_make` in the root of your catkin workspace.
 
 ## Running 
-TODO
+```
+roslaunch pbb_visualization visualize_bringup.launch
+```
