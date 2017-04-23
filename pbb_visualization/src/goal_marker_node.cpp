@@ -36,7 +36,7 @@
 
 #include <interactive_markers/interactive_marker_server.h>
 #include <interactive_markers/menu_handler.h>
-#include <geometry_msgs/Point.h>
+#include <geometry_msgs/PointStamped.h>
 #include <std_msgs/Bool.h>
 
 using namespace visualization_msgs;
@@ -48,7 +48,11 @@ void processFeedback(
 {
 	std::ostringstream s;
 	//	Eigen::Affine3d point;
-	std_msgs::Bool msg;
+	std_msgs::Bool reset_msg;
+	geometry_msgs::PointStamped msg;
+	msg.header.frame_id = "gelatin";
+	msg.header.stamp = ros::Time::now();
+	msg.point = feedback->pose.position;
 
 	switch(feedback->event_type){
 	case visualization_msgs::InteractiveMarkerFeedback::POSE_UPDATE:
@@ -63,16 +67,16 @@ void processFeedback(
 		switch(feedback->menu_entry_id){
 		case 1:
 			ROS_INFO_STREAM("Go to Point Selected!");
-			pointPub.publish(feedback->pose.position);
+			pointPub.publish(msg);
 			break;
 		case 2:
 			ROS_INFO_STREAM("Plan Trajectory selected!");
-			trajPointPub.publish(feedback->pose.position);
+			trajPointPub.publish(msg);
 			break;
 		case 3:
 			ROS_INFO_STREAM("Reset Robot Selected!");
-			msg.data = true;
-			resetPub.publish(msg);
+			reset_msg.data = true;
+			resetPub.publish(reset_msg);
 			break;
 
 		default:
@@ -87,8 +91,8 @@ int main(int argc, char** argv)
 	ros::init(argc, argv, "goal_marker_node");
 	ros::NodeHandle nh;
 
-	pointPub = nh.advertise<geometry_msgs::Point>( "goal_point", 1 );
-	trajPointPub = nh.advertise<geometry_msgs::Point>( "traj_goal_point", 1 );
+	pointPub = nh.advertise<geometry_msgs::PointStamped>( "goal_point", 1 );
+	trajPointPub = nh.advertise<geometry_msgs::PointStamped>( "traj_goal_point", 1 );
 	resetPub = nh.advertise<std_msgs::Bool>( "reset_robot", 1 );
 
 	// create an interactive marker server on the topic namespace simple_marker

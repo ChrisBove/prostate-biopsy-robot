@@ -32,7 +32,7 @@
 #include <ros/ros.h>
 
 #include <interactive_markers/interactive_marker_server.h>
-#include <geometry_msgs/Point.h>
+#include <geometry_msgs/PointStamped.h>
 
 using namespace visualization_msgs;
 
@@ -45,7 +45,12 @@ void processFeedback(
   ROS_INFO_STREAM( feedback->marker_name << " is now at "
       << feedback->pose.position.x << ", " << feedback->pose.position.y
       << ", " << feedback->pose.position.z );
-  pointPub.publish(feedback->pose.position);
+
+  geometry_msgs::PointStamped msg;
+  msg.header.frame_id = "gelatin";
+  msg.header.stamp = ros::Time::now();
+  msg.point = feedback->pose.position;
+  pointPub.publish(msg);
 }
 
 int main(int argc, char** argv)
@@ -53,7 +58,7 @@ int main(int argc, char** argv)
   ros::init(argc, argv, "marker_node");
   ros::NodeHandle nh;
 
-  pointPub = nh.advertise<geometry_msgs::Point>( "start_point", 1 );
+  pointPub = nh.advertise<geometry_msgs::PointStamped>( "start_point", 1 );
 
   // create an interactive marker server on the topic namespace simple_marker
   interactive_markers::InteractiveMarkerServer server("marker_node");
