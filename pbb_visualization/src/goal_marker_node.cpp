@@ -35,15 +35,45 @@
 #include <ros/ros.h>
 
 #include <interactive_markers/interactive_marker_server.h>
+#include <interactive_markers/menu_handler.h>
 
 using namespace visualization_msgs;
 
 void processFeedback(
     const visualization_msgs::InteractiveMarkerFeedbackConstPtr &feedback )
 {
-  ROS_INFO_STREAM( feedback->marker_name << " is now at "
-      << feedback->pose.position.x << ", " << feedback->pose.position.y
-      << ", " << feedback->pose.position.z );
+	std::ostringstream s;
+	//	Eigen::Affine3d point;
+
+		switch(feedback->event_type){
+		case visualization_msgs::InteractiveMarkerFeedback::POSE_UPDATE:
+	//		ROS_INFO_STREAM(s.str() << data->marker_name << " is located at " << data->pose.position.x << ", "
+	//				<< data->pose.position.y << ", "
+	//				<< data->pose.position.z );
+	//		tf::poseMsgToEigen(feedback->pose,point);
+	//		std::cout << point.matrix() << std::endl;
+			break;
+
+		case visualization_msgs::InteractiveMarkerFeedback::MENU_SELECT:
+			switch(feedback->menu_entry_id){
+			case 1:
+				ROS_INFO_STREAM("Go to Point Selected!");
+
+				break;
+			case 2:
+				ROS_INFO_STREAM("Plan Trajectory selected!");
+				break;
+
+			case 3:
+				ROS_INFO_STREAM("Reset Robot Selected!");
+
+				break;
+
+			default:
+				ROS_WARN_STREAM(s.str() << "Unknown menu option selected! Code: " << feedback->menu_entry_id);
+				break;
+			}
+		}
 }
 
 int main(int argc, char** argv)
@@ -60,6 +90,11 @@ int main(int argc, char** argv)
   int_marker.name = "goal_marker";
   int_marker.description = "Goal Marker";
   int_marker.scale = 0.05;
+
+  interactive_markers::MenuHandler menuHandler;
+  menuHandler.insert("Go to Point", &processFeedback);
+  menuHandler.insert("Plan Trajectory", &processFeedback);
+  menuHandler.insert("Reset Robot", &processFeedback);
 
   // create a grey box marker
   visualization_msgs::Marker box_marker;
@@ -111,6 +146,8 @@ int main(int argc, char** argv)
   // add the interactive marker to our collection &
   // tell the server to call processFeedback() when feedback arrives for it
   server.insert(int_marker, &processFeedback);
+
+  menuHandler.apply(server, int_marker.name);
 
   // 'commit' changes and send to all clients
   server.applyChanges();
