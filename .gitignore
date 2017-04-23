@@ -27,3 +27,7 @@
 *.exe
 *.out
 *.app
+
+
+# pycharm shit
+.idea/*
