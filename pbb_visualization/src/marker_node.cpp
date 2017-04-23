@@ -32,8 +32,12 @@
 #include <ros/ros.h>
 
 #include <interactive_markers/interactive_marker_server.h>
+#include <geometry_msgs/Point.h>
 
 using namespace visualization_msgs;
+
+// globals that keep me up at night...
+ros::Publisher pointPub;
 
 void processFeedback(
     const visualization_msgs::InteractiveMarkerFeedbackConstPtr &feedback )
@@ -41,11 +45,15 @@ void processFeedback(
   ROS_INFO_STREAM( feedback->marker_name << " is now at "
       << feedback->pose.position.x << ", " << feedback->pose.position.y
       << ", " << feedback->pose.position.z );
+  pointPub.publish(feedback->pose.position);
 }
 
 int main(int argc, char** argv)
 {
   ros::init(argc, argv, "marker_node");
+  ros::NodeHandle nh;
+
+  pointPub = nh.advertise<geometry_msgs::Point>( "start_point", 1 );
 
   // create an interactive marker server on the topic namespace simple_marker
   interactive_markers::InteractiveMarkerServer server("marker_node");
