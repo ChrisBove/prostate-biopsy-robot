@@ -6,10 +6,10 @@ import matplotlib.pyplot as plt
 from mpl_toolkits.mplot3d import Axes3D
 
 #Metric Units
-u1 = 0.005
-u2 = 0.5
+u1 = 0.001
+u2 = 0
 
-l1  = 0.04; #Distance B to C
+l1  = 4; #Distance B to C
 phi = 0.17767451785
 l2 = 0.023775
 k = math.tan(phi)/l1
@@ -34,7 +34,7 @@ g_ab = np.array([[[1,0,0,0],[0,1,0,0],[0,0,1,0],[0,0,0,1]]])
 
 n = np.zeros((3,1))
 
-for i in range (0,300):
+for i in range (0,3000):
     g_ab = np.vstack((g_ab,np.array([(g_ab[i,:,:]).dot(expm((u1*V1_hat + u2*V2_hat)*T))])))
     n = np.hstack((n,(g_ab[i,0:3,0:3]*l2).dot(e3)+(g_ab[i,0:3,3]).reshape(3,1)))
  
@@ -42,9 +42,7 @@ print n[2]
 fig = plt.figure()
 ax = fig.add_subplot(111, projection='3d')
 ax.plot(n[0,1:], n[1,1:], n[2,1:], label='parametric curve')
-ax.set_xlim([-0.02,0.02])
-ax.set_ylim([-0.02,0.02])
-ax.set_zlim([0,0.2])
+
 ax.legend()
 
 plt.show()
