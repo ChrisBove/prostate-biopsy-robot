@@ -6,7 +6,13 @@ Modeling and Control of Needle-Guiding Prostate Biopsy Robot - RBE 502 Final Pro
 - pbb_visualization: ROS package for managing interactive markers and componenets for visualization of the system in RViz.
 
 ## Workspace Setup
-You need Ubuntu 14.04 with ROS indigo installed. Within your catkin workspace, clone this repository and run `catkin_make` in the root of your catkin workspace.
+You need Ubuntu 14.04 with ROS indigo installed. Within your catkin workspace `src` folder, clone this repository and run `catkin_make` in the root of your catkin workspace.
+```
+cd ~/catkin_ws/src
+git clone <git repository>
+cd ..
+catkin_make
+```
 
 ## Running 
 ```
