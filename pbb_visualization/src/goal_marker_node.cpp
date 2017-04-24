@@ -125,6 +125,8 @@ int main(int argc, char** argv)
 	// create a non-interactive control which contains the box
 	visualization_msgs::InteractiveMarkerControl box_control;
 	box_control.always_visible = true;
+	box_control.interaction_mode = InteractiveMarkerControl::MENU;
+	box_control.name = "menu_only_control";
 	box_control.markers.push_back( box_marker );
 
 	// add the control to the interactive marker
@@ -153,9 +155,6 @@ int main(int argc, char** argv)
 	control.orientation.z = 1;
 	control.name = "move_y";
 	control.interaction_mode = InteractiveMarkerControl::MOVE_AXIS;
-	int_marker.controls.push_back(control);
-
-	// add the control to the interactive marker
 	int_marker.controls.push_back(control);
 
 	int_marker.pose.position.x = 0.10;
