@@ -10,7 +10,7 @@
 
 	<!-- Visualization -->
 	<node name="gelatin_visualization_node" pkg="pbb_visualization" type="gelatin_marker" />
-	<node name="start_marker_node" pkg="pbb_visualization" type="marker_node" />
+	<node name="start_marker_node" pkg="pbb_visualization" type="start_marker_node" />
 	<node name="goal_marker_node" pkg="pbb_visualization" type="goal_marker" output="screen"/>
 	<node name="target_path_drawer" pkg="pbb_visualization" type="target_path_drawer.py" />
 	<node name="actual_path_drawer" pkg="pbb_visualization" type="actual_path_drawer.py" />
