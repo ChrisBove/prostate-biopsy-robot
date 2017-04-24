@@ -22,6 +22,7 @@ def startCallback(data):
     # rospy.loginfo(rospy.get_caller_id() + " got start point %s", data.point)
     global startPoint
     startPoint = data
+    # test
     # NOTE: if this callback does not happen before the goal, all will be OK:
     #  the startPoint is initialized to 0, which is also what it happens to be
     #  the actual system 
@@ -82,3 +83,21 @@ if __name__ == '__main__':
     rospy.spin()
     
     rospy.loginfo(rospy.get_caller_id() + " terminated")
+
+def SteeringAngle(targetPosition, needlePose):
+    delta = np.array([needlePose[0] - targetPosition[0], needlePose[1] - targetPosition[1], needlePose[2] - targetPosition[2]])
+
+    delta_rotated = np.dot(RotationMatrix(needlePose[4], needlePose[5]), delta.T)
+
+    angle = math.atan2(delta_rotated[1], delta_rotated[2])
+
+    error = [delta_rotated[1], delta_rotated[2]]
+    return angle, error
+
+def RotationMatrix(pitch, yaw):
+    R_pitch = np.array([[math.cos(pitch), 0, math.sin(pitch)], [0, 1, 0], [-math.sin(pitch), 0, math.cos(pitch)]]).T
+
+    R_yaw = np.array([[math.cos(yaw), math.sin(yaw), 0], [-math.sin(yaw), math.cos(yaw), 0], [0, 0, 1]])
+
+    R = np.dot(R_yaw, R_pitch)
+    return R
