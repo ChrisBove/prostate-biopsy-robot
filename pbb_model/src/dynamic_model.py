@@ -15,7 +15,7 @@ class DynamicModel(object):
     def __init__(self):
 
         self._l = 4
-        self._depth = 0
+
         self._N = 4
         self._P = np.asmatrix( (2.0 / self._l) * np.ones((self._N, 1)))
         self._C0 = np.asmatrix(np.ones((1, self._N)))
@@ -33,7 +33,8 @@ class DynamicModel(object):
         for ii in xrange(self._N):
             np.put(self._Cl, [ii], [(-1)**ii])
         np.put(self._Cl, [0], [.5])
-
+        # updated every step
+        self._depth = 0
         self._s_state =  np.array( [[1,0,0,0],[0,1,0,0],[0,0,1,0],[0,0,0,1]])
         self._q_state = np.asmatrix(np.zeros((self._N, 1)))
         self._n = np.zeros((3,1))
@@ -43,8 +44,7 @@ class DynamicModel(object):
         """Updates the systems"""
 
         self.update_depth(u1, dt)
-        R = 1
-        Q =  np.array( [[1,0,0,0],[0,1,0,0],[0,0,1,0],[0,0,0,1]])
+
         A = self.get_Amat(u1)
         B = self.get_Bmat(u1)
         C = self.get_Cmat(A)
@@ -188,6 +188,12 @@ class DynamicModel(object):
                        [m.sin(beta), 0, 1]])
         return J
 
+    def reset(self):
+        self._depth = 0
+        self._s_state =  np.array( [[1,0,0,0],[0,1,0,0],[0,0,1,0],[0,0,0,1]])
+        self._q_state = np.asmatrix(np.zeros((self._N, 1)))
+        self._n = np.zeros((3,1))
+        
     def get_needle_forces(self):
         """
             Calulates the force acting on the needle tip

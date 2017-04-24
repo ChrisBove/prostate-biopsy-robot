@@ -30,3 +30,6 @@
 
 # Python Stuff
 *.pyc
+
+# pycharm stuff
+.idea/*
