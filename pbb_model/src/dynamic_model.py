@@ -5,6 +5,7 @@
 import copy
 import math as m
 import numpy as np
+
 from scipy.linalg import expm
 
 
@@ -26,7 +27,7 @@ class DynamicModel(object):
         self._pho = 6.453
         self._b = 10  # coef of friction
         self._beta = 4.753 * 10**(-3)
-        self._kappa = 13.698630137  # kappa
+        self._kappa = 1.3698630137  # kappa
 
         self._Cl = np.ones((1, self._N))
         for ii in xrange(self._N):
@@ -42,15 +43,18 @@ class DynamicModel(object):
         """Updates the systems"""
 
         self.update_depth(u1, dt)
+        R = 1
+        Q =  np.array( [[1,0,0,0],[0,1,0,0],[0,0,1,0],[0,0,0,1]])
         A = self.get_Amat(u1)
         B = self.get_Bmat(u1)
         C = self.get_Cmat(A)
         D = self.get_Dmat(B)
-        print B
+
+
         (self._n, self._s_state) = self.update_S(u1, u2, C, D, dt)
 
         self._q_state = A * self._q_state + B * u2
-        print self._q_state
+        #print self._q_state
         return self._n
 
     def update_depth(self, v, dt):
@@ -58,7 +62,11 @@ class DynamicModel(object):
         self._depth = self._depth + v * dt
 
     def update_S(self, u1, u2, C, D, dt):
-        """Update the S state"""
+        """
+            Update the S state
+            u1 is linear velolicy
+            u2 is the angular velocity
+           """
         l2 =  0.023775
         state = self._s_state
         # this are the unit vectors to move it into the right frame
@@ -96,7 +104,7 @@ class DynamicModel(object):
         return A
 
     def get_Bmat(self, v):
-        """This function calculate the 
+        """This function calculate the
         B matrix"""
         invD = self.get_invD(v)
         # this is link a sring constant
