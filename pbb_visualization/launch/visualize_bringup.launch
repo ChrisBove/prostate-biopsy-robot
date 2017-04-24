@@ -3,9 +3,13 @@
 <launch>
 	<!-- Controllers -->
 	<node name="bang_bang_controller" pkg="pbb_controllers" type="bang_bang_controller.py" output="screen" />
+
 	<!-- Visualization -->
 	<node name="gelatin_visualization_node" pkg="pbb_visualization" type="gelatin_marker" />
 	<node name="start_marker_node" pkg="pbb_visualization" type="marker_node" />
 	<node name="goal_marker_node" pkg="pbb_visualization" type="goal_marker" output="screen"/>
+	<node name="target_path_drawer" pkg="pbb_visualization" type="target_path_drawer.py" output="screen"/>
+
+	<!-- RVIZ -->
 	<node name="rviz" pkg="rviz" type="rviz" args="-d $(find pbb_visualization)/launch/rviz_config.rviz" required="true" />
 </launch>
