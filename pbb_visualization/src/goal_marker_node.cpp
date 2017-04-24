@@ -158,7 +158,7 @@ int main(int argc, char** argv)
 	// add the control to the interactive marker
 	int_marker.controls.push_back(control);
 
-	int_marker.pose.position.x = -0.10;
+	int_marker.pose.position.x = 0.10;
 
 	// add the interactive marker to our collection &
 	// tell the server to call processFeedback() when feedback arrives for it

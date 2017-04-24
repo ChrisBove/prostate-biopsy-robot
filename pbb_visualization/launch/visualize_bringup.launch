@@ -1,6 +1,9 @@
 <?xml version="1.0" ?>
 
 <launch>
+	<!-- TF -->
+	<node name="static_tf_world_gelatin" pkg="tf2_ros" type="static_transform_publisher" args="0 0 0 0 0 0 world gelatin" />
+
 	<!-- Model -->
 	<node name="pose_feedback_noise_node" pkg="pbb_model" type="pose_feedback_noise_node" />
 
