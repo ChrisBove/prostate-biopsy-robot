@@ -50,7 +50,7 @@ Visualization Manager:
     - Class: rviz/Marker
       Enabled: true
       Marker Topic: /gelatin
-      Name: Marker
+      Name: Gelatin
       Namespaces:
         gelatin: true
       Queue Size: 100
@@ -58,7 +58,7 @@ Visualization Manager:
     - Class: rviz/InteractiveMarkers
       Enable Transparency: true
       Enabled: true
-      Name: InteractiveMarkers
+      Name: Goal Marker
       Show Axes: false
       Show Descriptions: true
       Show Visual Aids: false
@@ -67,11 +67,27 @@ Visualization Manager:
     - Class: rviz/InteractiveMarkers
       Enable Transparency: true
       Enabled: true
-      Name: InteractiveMarkers
+      Name: Start Marker
       Show Axes: false
       Show Descriptions: true
       Show Visual Aids: false
       Update Topic: /marker_node/update
+      Value: true
+    - Class: rviz/Marker
+      Enabled: true
+      Marker Topic: /target_path
+      Name: Target Path
+      Namespaces:
+        "": true
+      Queue Size: 100
+      Value: true
+    - Class: rviz/Marker
+      Enabled: true
+      Marker Topic: /actual_path
+      Name: Actual Path
+      Namespaces:
+        "": true
+      Queue Size: 100
       Value: true
   Enabled: true
   Global Options:
@@ -97,7 +113,7 @@ Visualization Manager:
   Views:
     Current:
       Class: rviz/Orbit
-      Distance: 0.558627
+      Distance: 0.307084
       Enable Stereo Rendering:
         Stereo Eye Separation: 0.06
         Stereo Focal Distance: 1
@@ -109,10 +125,10 @@ Visualization Manager:
         Z: 0
       Name: Current View
       Near Clip Distance: 0.01
-      Pitch: 0.660398
+      Pitch: 0.0703981
       Target Frame: <Fixed Frame>
       Value: Orbit (rviz)
-      Yaw: 0.0454263
+      Yaw: 5.7586
     Saved: ~
 Window Geometry:
   Displays:

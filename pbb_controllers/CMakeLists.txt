@@ -1,8 +1,8 @@
 cmake_minimum_required(VERSION 2.8.3)
-project(pbb_model)
+project(pbb_controllers)
 
 ## Add support for C++11, supported in ROS Kinetic and newer
-add_definitions(-std=c++11)
+# add_definitions(-std=c++11)
 
 ## Find catkin macros and libraries
 ## if COMPONENTS list like find_package(catkin REQUIRED COMPONENTS xyz)
@@ -10,8 +10,9 @@ add_definitions(-std=c++11)
 find_package(catkin REQUIRED COMPONENTS
   geometry_msgs
   roscpp
+  rospy
   std_msgs
-  trajectory_msgs
+  tf
 )
 
 ## System dependencies are found with CMake's conventions
@@ -71,7 +72,7 @@ find_package(catkin REQUIRED COMPONENTS
 ## Generate added messages and services with any dependencies listed here
 # generate_messages(
 #   DEPENDENCIES
-#   geometry_msgs#   std_msgs#   trajectory_msgs
+#   geometry_msgs#   std_msgs
 # )
 
 ################################################
@@ -105,8 +106,8 @@ find_package(catkin REQUIRED COMPONENTS
 ## DEPENDS: system dependencies of this project that dependent projects also need
 catkin_package(
 #  INCLUDE_DIRS include
-#  LIBRARIES pbb_model
- CATKIN_DEPENDS geometry_msgs roscpp std_msgs trajectory_msgs
+#  LIBRARIES pbb_controllers
+#  CATKIN_DEPENDS geometry_msgs roscpp rospy std_msgs tf
 #  DEPENDS system_lib
 )
 
@@ -123,7 +124,7 @@ include_directories(
 
 ## Declare a C++ library
 # add_library(${PROJECT_NAME}
-#   src/${PROJECT_NAME}/pbb_model.cpp
+#   src/${PROJECT_NAME}/pbb_controllers.cpp
 # )
 
 ## Add cmake target dependencies of the library
@@ -134,29 +135,22 @@ include_directories(
 ## Declare a C++ executable
 ## With catkin_make all packages are built within a single CMake context
 ## The recommended prefix ensures that target names across packages don't collide
-# add_executable(${PROJECT_NAME}_node src/pbb_model_node.cpp)
-add_executable(${PROJECT_NAME}_pose_feedback_noise_node src/pose_feedback_noise_node.cpp)
+# add_executable(${PROJECT_NAME}_node src/pbb_controllers_node.cpp)
 
 ## Rename C++ executable without prefix
 ## The above recommended prefix causes long target names, the following renames the
 ## target back to the shorter version for ease of user use
 ## e.g. "rosrun someones_pkg node" instead of "rosrun someones_pkg someones_pkg_node"
 # set_target_properties(${PROJECT_NAME}_node PROPERTIES OUTPUT_NAME node PREFIX "")
-set_target_properties(${PROJECT_NAME}_pose_feedback_noise_node PROPERTIES OUTPUT_NAME pose_feedback_noise_node PREFIX "")
 
 ## Add cmake target dependencies of the executable
 ## same as for the library above
 # add_dependencies(${PROJECT_NAME}_node ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
-add_dependencies(${PROJECT_NAME}_pose_feedback_noise_node ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
 
 ## Specify libraries to link a library or executable target against
 # target_link_libraries(${PROJECT_NAME}_node
 #   ${catkin_LIBRARIES}
 # )
-target_link_libraries(${PROJECT_NAME}_pose_feedback_noise_node
-  ${catkin_LIBRARIES}
-)
-
 
 #############
 ## Install ##
@@ -198,7 +192,7 @@ target_link_libraries(${PROJECT_NAME}_pose_feedback_noise_node
 #############
 
 ## Add gtest based cpp test target and link libraries
-# catkin_add_gtest(${PROJECT_NAME}-test test/test_pbb_model.cpp)
+# catkin_add_gtest(${PROJECT_NAME}-test test/test_pbb_controllers.cpp)
 # if(TARGET ${PROJECT_NAME}-test)
 #   target_link_libraries(${PROJECT_NAME}-test ${PROJECT_NAME})
 # endif()
