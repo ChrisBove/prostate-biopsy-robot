@@ -22,8 +22,11 @@
 *.la
 *.a
 *.lib
-*.pyc
+
 # Executables
 *.exe
 *.out
 *.app
+
+# Python Stuff
+*.pyc

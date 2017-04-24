@@ -59,7 +59,7 @@ int main( int argc, char** argv )
     line_marker.points.push_back(top_left);
     line_marker.points.push_back(bot_left);
     p = bot_left;
-    p.x = -DEPTH;
+    p.x = DEPTH;
     geometry_msgs::Point back_bot_left = p;
     line_marker.points.push_back(back_bot_left);
     p.z = HALF_SIDES;

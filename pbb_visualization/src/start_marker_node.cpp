@@ -55,13 +55,13 @@ void processFeedback(
 
 int main(int argc, char** argv)
 {
-	ros::init(argc, argv, "marker_node");
+	ros::init(argc, argv, "start_marker_node");
 	ros::NodeHandle nh;
 
 	pointPub = nh.advertise<geometry_msgs::PointStamped>( "start_point", 1 );
 
 	// create an interactive marker server on the topic namespace simple_marker
-	interactive_markers::InteractiveMarkerServer server("marker_node");
+	interactive_markers::InteractiveMarkerServer server("start_marker_node");
 
 	// create an interactive marker for our server
 	visualization_msgs::InteractiveMarker int_marker;

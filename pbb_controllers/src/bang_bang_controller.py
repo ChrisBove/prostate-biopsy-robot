@@ -19,7 +19,7 @@ def goalCallback(data):
 
 def startCallback(data):
     """This callback will fire very frequently when the start marker is dragged"""
-    rospy.loginfo(rospy.get_caller_id() + " got start point %s", data.point)
+    # rospy.loginfo(rospy.get_caller_id() + " got start point %s", data.point)
     global startPoint
     startPoint = data
     # NOTE: if this callback does not happen before the goal, all will be OK:
@@ -76,7 +76,7 @@ if __name__ == '__main__':
     rospy.Subscriber("start_point", PointStamped, startCallback, queue_size=1)
     
     # subscriber for the pose feedback
-    rospy.Subscriber("controller_pose_feedback", PoseStamped, poseFeedbackCallback, queue_size=1)
+    rospy.Subscriber("needle_tip_pose_noisy", PoseStamped, poseFeedbackCallback, queue_size=1)
     
     # this just keeps the node alive, servicing the callbacks
     rospy.spin()
