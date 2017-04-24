@@ -19,7 +19,7 @@ def goalCallback(data):
 
 def startCallback(data):
     """This callback will fire very frequently when the start marker is dragged"""
-    rospy.loginfo(rospy.get_caller_id() + " got start point %s", data.point)
+    # rospy.loginfo(rospy.get_caller_id() + " got start point %s", data.point)
     global startPoint
     startPoint = data
     # NOTE: if this callback does not happen before the goal, all will be OK:
