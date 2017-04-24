@@ -5,12 +5,15 @@
 
 import rospy, tf, numpy, math
 from geometry_msgs.msg import Twist, PointStamped, PoseStamped
+from std_msgs.msg import Bool
 from tf.transformations import euler_from_quaternion
 
 def goalCallback(data):
     """This callback will occur once when the """
     rospy.loginfo(rospy.get_caller_id() + " got goal point \n%s", data.point)
     # do something with your goal point! (probably enter a loop or something)
+    
+    publishReset() # to clear out the dynamic model state (this is a new goal request)
     
     # pull out info like data.point.x, data.point.y, etc.
 
@@ -36,6 +39,12 @@ def poseFeedbackCallback(data):
     theta = math.degrees(yaw)
 
 
+def publishReset():
+    """This is used to request a reset from the dynamic model node."""
+    global resetPub
+    msg = Bool()
+    msg = True
+    resetPub.publish(msg)
     
 def publishTwist(lin_Vel, ang_Vel):
     """Send a movement (twist) message."""
@@ -50,6 +59,7 @@ if __name__ == '__main__':
     rospy.init_node('bang_bang_controller')
     
     global twistPub
+    global resetPub
     global startPoint 
     startPoint = PointStamped()
     global feedbackPose
@@ -57,6 +67,9 @@ if __name__ == '__main__':
     
     # setup the publisher for the twist msg to the dynamic controller
     twistPub = rospy.Publisher('cmd_velocity', Twist, None, queue_size=10)
+    
+    # this is for demanding the dynamic model to reset
+    resetPub = rospy.Publisher('reset_robot', Bool, None, queue_size=1)
     
     # setup the subscribers to the interactive marker Point topics
     rospy.Subscriber("goal_point", PointStamped, goalCallback, queue_size=1)
