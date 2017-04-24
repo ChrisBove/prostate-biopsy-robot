@@ -71,14 +71,14 @@ Visualization Manager:
       Show Axes: false
       Show Descriptions: true
       Show Visual Aids: false
-      Update Topic: /marker_node/update
+      Update Topic: /start_marker_node/update
       Value: true
     - Class: rviz/Marker
       Enabled: true
       Marker Topic: /target_path
       Name: Target Path
       Namespaces:
-        "": true
+        {}
       Queue Size: 100
       Value: true
     - Class: rviz/Marker
@@ -86,7 +86,7 @@ Visualization Manager:
       Marker Topic: /actual_path
       Name: Actual Path
       Namespaces:
-        "": true
+        {}
       Queue Size: 100
       Value: true
   Enabled: true
@@ -125,10 +125,10 @@ Visualization Manager:
         Z: 0
       Name: Current View
       Near Clip Distance: 0.01
-      Pitch: 0.0703981
+      Pitch: 0.530398
       Target Frame: <Fixed Frame>
       Value: Orbit (rviz)
-      Yaw: 5.7586
+      Yaw: 5.8686
     Saved: ~
 Window Geometry:
   Displays:
