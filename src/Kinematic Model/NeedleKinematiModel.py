@@ -38,7 +38,7 @@ for i in range (0,300):
     g_ab = np.vstack((g_ab,np.array([(g_ab[i,:,:]).dot(expm((u1*V1_hat + u2*V2_hat)*T))])))
     n = np.hstack((n,(g_ab[i,0:3,0:3]*l2).dot(e3)+(g_ab[i,0:3,3]).reshape(3,1)))
  
-print n[2]
+print k
 fig = plt.figure()
 ax = fig.add_subplot(111, projection='3d')
 ax.plot(n[0,1:], n[1,1:], n[2,1:], label='parametric curve')
