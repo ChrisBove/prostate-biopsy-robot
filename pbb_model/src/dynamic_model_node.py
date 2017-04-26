@@ -36,7 +36,7 @@ def twistCallback(data):
     # update the dynamic model with the new velocity cmd
     global model
     dt = 0.1 # TODO change this to use the header
-    n = model.update(twist.linear.x, twist.angular.z,dt)
+    n = model.update(twist.linear.x, twist.angular.x,dt)
     
     pose = PoseStamped()
     # put the header info in

@@ -70,7 +70,7 @@ def publishTwist(lin_Vel, ang_Vel):
     global twistPub
     msg = Twist()
     msg.linear.x = lin_Vel
-    msg.angular.z = ang_Vel
+    msg.angular.x = ang_Vel
     twistPub.publish(msg)
 
 def SteeringAngle(targetPosition, needlePose):
