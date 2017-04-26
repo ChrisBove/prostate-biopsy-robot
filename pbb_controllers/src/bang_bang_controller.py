@@ -3,18 +3,21 @@
     This is the bang bang controller for the needle prostate bot
 """
 
-import rospy, tf, numpy, math
+import rospy, tf, math
+import numpy as np
 from geometry_msgs.msg import Twist, PointStamped, PoseStamped
 from std_msgs.msg import Bool
 from tf.transformations import euler_from_quaternion
 
 def goalCallback(data):
-    """This callback will occur once when the """
+    """This callback will occur once when the goal point is set"""
     rospy.loginfo(rospy.get_caller_id() + " got goal point \n%s", data.point)
     # do something with your goal point! (probably enter a loop or something)
     
     publishReset() # to clear out the dynamic model state (this is a new goal request)
     
+    global goalPoint
+    goalPoint = data
     # pull out info like data.point.x, data.point.y, etc.
 
 def startCallback(data):
@@ -37,7 +40,20 @@ def poseFeedbackCallback(data):
     #convert to euler
     roll, pitch, yaw = euler_from_quaternion(q)
     #convert yaw to degrees
-    theta = math.degrees(yaw)
+    # theta = math.degrees(yaw)
+
+    # find the desired steering angle
+    thetaTarget = SteeringAngle([goalPoint.point.x, goalPoint.point.y, goalPoint.point.z], [data.pose.position.x, data.pose.position.y, data.pose.position.z, roll, pitch, yaw])
+
+    # How far off are we?
+    thetaError = roll - thetaTarget
+
+    # proportional gain
+    Kp = 0.1
+    Kd = 1
+
+    # This is actually just a P controller right now
+    publishTwist(0.005, Kp*thetaError)
 
 
 def publishReset():
