@@ -43,7 +43,7 @@ def poseFeedbackCallback(data):
     # theta = math.degrees(yaw)
 
     # find the desired steering angle
-    thetaTarget = SteeringAngle([goalPoint.point.x, goalPoint.point.y, goalPoint.point.z], [data.pose.position.x, data.pose.position.y, data.pose.position.z, roll, pitch, yaw])
+    thetaTarget, error = SteeringAngle([goalPoint.point.x, goalPoint.point.y, goalPoint.point.z], [data.pose.position.x, data.pose.position.y, data.pose.position.z, roll, pitch, yaw])
 
     # How far off are we?
     thetaError = roll - thetaTarget
@@ -70,6 +70,24 @@ def publishTwist(lin_Vel, ang_Vel):
     msg.linear.x = lin_Vel
     msg.angular.z = ang_Vel
     twistPub.publish(msg)
+
+def SteeringAngle(targetPosition, needlePose):
+    delta = np.array([needlePose[0] - targetPosition[0], needlePose[1] - targetPosition[1], needlePose[2] - targetPosition[2]])
+
+    delta_rotated = np.dot(RotationMatrix(needlePose[4], needlePose[5]), delta.T)
+
+    angle = math.atan2(delta_rotated[1], delta_rotated[2])
+
+    error = [delta_rotated[1], delta_rotated[2]]
+    return angle, error
+
+def RotationMatrix(pitch, yaw):
+    R_pitch = np.array([[math.cos(pitch), 0, math.sin(pitch)], [0, 1, 0], [-math.sin(pitch), 0, math.cos(pitch)]]).T
+
+    R_yaw = np.array([[math.cos(yaw), math.sin(yaw), 0], [-math.sin(yaw), math.cos(yaw), 0], [0, 0, 1]])
+
+    R = np.dot(R_yaw, R_pitch)
+    return R
 
 # This is the program's main function
 if __name__ == '__main__':
@@ -99,21 +117,3 @@ if __name__ == '__main__':
     rospy.spin()
     
     rospy.loginfo(rospy.get_caller_id() + " terminated")
-
-def SteeringAngle(targetPosition, needlePose):
-    delta = np.array([needlePose[0] - targetPosition[0], needlePose[1] - targetPosition[1], needlePose[2] - targetPosition[2]])
-
-    delta_rotated = np.dot(RotationMatrix(needlePose[4], needlePose[5]), delta.T)
-
-    angle = math.atan2(delta_rotated[1], delta_rotated[2])
-
-    error = [delta_rotated[1], delta_rotated[2]]
-    return angle, error
-
-def RotationMatrix(pitch, yaw):
-    R_pitch = np.array([[math.cos(pitch), 0, math.sin(pitch)], [0, 1, 0], [-math.sin(pitch), 0, math.cos(pitch)]]).T
-
-    R_yaw = np.array([[math.cos(yaw), math.sin(yaw), 0], [-math.sin(yaw), math.cos(yaw), 0], [0, 0, 1]])
-
-    R = np.dot(R_yaw, R_pitch)
-    return R
