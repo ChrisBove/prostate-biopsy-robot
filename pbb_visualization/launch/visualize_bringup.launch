@@ -6,7 +6,7 @@
 
 	<!-- Model -->
 	<node name="pose_feedback_noise_node" pkg="pbb_model" type="pose_feedback_noise_node" />
-	<node name="dynamic_model_node" pkg="pbb_model" type="dynamic_model_node.py" />
+	<node name="dynamic_model_node" pkg="pbb_model" type="dynamic_model_node.py" output="screen" />
 
 	<!-- Controllers -->
 	<node name="bang_bang_controller" pkg="pbb_controllers" type="bang_bang_controller.py" output="screen" />

@@ -44,8 +44,7 @@ class DynamicModel(object):
         """Updates the systems"""
 
         # check if inputs are 0
-        if (u1 != 0.0 and u2 != 0.0): 
-            print "I didn't get zeros"
+        if not ((u1 == 0.0) and (u2 == 0.0)): 
             self.update_depth(u1, dt)
 
             A = self.get_Amat(u1)
