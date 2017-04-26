@@ -51,8 +51,8 @@ def poseFeedbackCallback(data):
     rospy.loginfo(rospy.get_caller_id() + " %s", thetaError)
 
     # proportional gain
-    Kp = 0.1
-    Kd = 1
+    Kp = 1.0
+    Kd = 1.0
 
     # This is actually just a P controller right now
     publishTwist(0.001, Kp*thetaError)
@@ -76,7 +76,8 @@ def publishTwist(lin_Vel, ang_Vel):
 def SteeringAngle(targetPosition, needlePose):
     delta = np.array([needlePose[0] - targetPosition[0], needlePose[1] - targetPosition[1], needlePose[2] - targetPosition[2]])
 
-    delta_rotated = np.dot(RotationMatrix(needlePose[4], needlePose[5]), delta.T)
+    # delta_rotated = np.dot(RotationMatrix(needlePose[4], needlePose[5]), delta.T)
+    delta_rotated = delta
 
     angle = math.atan2(delta_rotated[1], delta_rotated[2])
 
