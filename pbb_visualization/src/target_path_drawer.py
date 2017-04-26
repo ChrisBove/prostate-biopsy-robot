@@ -124,6 +124,8 @@ def goalCallback(data):
             line.points.append(p_local)
 
         markerPub.publish(line)
+        # pass along the goal point as reachable
+        reachableGoalPub.publish(data)
 
 
 def startCallback(data):
@@ -149,12 +151,14 @@ if __name__ == '__main__':
     rospy.init_node('target_path_drawer')
 
     global markerPub
+    global reachableGoalPub
 
     global startPoint
     startPoint = PointStamped()
 
     # setup the publisher for the marker path
     markerPub = rospy.Publisher('target_path', Marker, None, queue_size=10)
+    reachableGoalPub = rospy.Publisher('goal_point_reachable', PointStamped, None, queue_size=10)
 
     # setup the subscribers to the interactive marker Point topics
     rospy.Subscriber("goal_point", PointStamped, goalCallback, queue_size=1)

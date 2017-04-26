@@ -114,7 +114,7 @@ if __name__ == '__main__':
     resetPub = rospy.Publisher('reset_robot', Bool, None, queue_size=1)
     
     # setup the subscribers to the interactive marker Point topics
-    rospy.Subscriber("goal_point", PointStamped, goalCallback, queue_size=1)
+    rospy.Subscriber("goal_point_reachable", PointStamped, goalCallback, queue_size=1)
     rospy.Subscriber("start_point", PointStamped, startCallback, queue_size=1)
     
     # subscriber for the pose feedback
