@@ -46,14 +46,16 @@ def poseFeedbackCallback(data):
     thetaTarget, error = SteeringAngle([goalPoint.point.x, goalPoint.point.y, goalPoint.point.z], [data.pose.position.x, data.pose.position.y, data.pose.position.z, roll, pitch, yaw])
 
     # How far off are we?
-    thetaError = roll - thetaTarget
+    thetaError = thetaTarget - roll
+
+    rospy.loginfo(rospy.get_caller_id() + " %s", thetaError)
 
     # proportional gain
     Kp = 0.1
     Kd = 1
 
     # This is actually just a P controller right now
-    publishTwist(0.005, Kp*thetaError)
+    publishTwist(0.001, Kp*thetaError)
 
 
 def publishReset():
@@ -111,7 +113,7 @@ if __name__ == '__main__':
     rospy.Subscriber("start_point", PointStamped, startCallback, queue_size=1)
     
     # subscriber for the pose feedback
-    rospy.Subscriber("needle_tip_pose_noisy", PoseStamped, poseFeedbackCallback, queue_size=1)
+    rospy.Subscriber("needle_tip_pose", PoseStamped, poseFeedbackCallback, queue_size=1)
     
     # this just keeps the node alive, servicing the callbacks
     rospy.spin()
