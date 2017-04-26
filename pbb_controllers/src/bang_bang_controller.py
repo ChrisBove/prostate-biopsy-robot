@@ -10,6 +10,8 @@ from std_msgs.msg import Bool
 from tf.transformations import euler_from_quaternion
 
 def goalCallback(data):
+    global doControl
+    doControl = True
     """This callback will occur once when the goal point is set"""
     rospy.loginfo(rospy.get_caller_id() + " got goal point \n%s", data.point)
     # do something with your goal point! (probably enter a loop or something)
@@ -34,6 +36,8 @@ def poseFeedbackCallback(data):
     """This callback gets the pose feedback from the camera"""
     global feedbackPose
     feedbackPose = data
+    global goalPoint
+    global doControl
     #access with data.pose.position.x or quaternion from data.pose.orientation.x 
     quat = data.pose.orientation
     q = [quat.x, quat.y, quat.z, quat.w]
@@ -42,7 +46,7 @@ def poseFeedbackCallback(data):
     #convert yaw to degrees
     # theta = math.degrees(yaw)
 
-    if not feedbackPose.pose.position.x >= goalPoint.point.x:
+    if doControl and not feedbackPose.pose.position.x >= goalPoint.point.x:
 
         # find the desired steering angle
         thetaTarget, error = SteeringAngle([goalPoint.point.x, goalPoint.point.y, goalPoint.point.z], [data.pose.position.x, data.pose.position.y, data.pose.position.z, roll, pitch, yaw])
@@ -60,6 +64,7 @@ def poseFeedbackCallback(data):
         publishTwist(0.001, Kp*thetaError)
     else:
         rospy.loginfo(rospy.get_caller_id() + " Arrived at the goal!")
+        doControl = False
 
 
 def publishReset():
@@ -106,6 +111,9 @@ if __name__ == '__main__':
     startPoint = PointStamped()
     global feedbackPose
     feedbackPose = PoseStamped()
+
+    global doControl
+    doControl = False
     
     # setup the publisher for the twist msg to the dynamic controller
     twistPub = rospy.Publisher('cmd_velocity', Twist, None, queue_size=10)
@@ -118,7 +126,7 @@ if __name__ == '__main__':
     rospy.Subscriber("start_point", PointStamped, startCallback, queue_size=1)
     
     # subscriber for the pose feedback
-    rospy.Subscriber("needle_tip_pose", PoseStamped, poseFeedbackCallback, queue_size=1)
+    rospy.Subscriber("needle_tip_pose_noisy", PoseStamped, poseFeedbackCallback, queue_size=1)
     
     # this just keeps the node alive, servicing the callbacks
     rospy.spin()

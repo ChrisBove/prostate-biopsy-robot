@@ -62,7 +62,7 @@ if __name__ == '__main__':
     markerPub = rospy.Publisher('actual_path', Marker, None, queue_size=10)
     
     # setup the subscribers to the interactive marker Point topics
-    rospy.Subscriber("needle_tip_pose", PoseStamped, poseCallback, queue_size=10)
+    rospy.Subscriber("needle_tip_pose_noisy", PoseStamped, poseCallback, queue_size=10)
     rospy.Subscriber("reset_robot", Bool, resetCallback, queue_size=1)
 
     # this just keeps the node alive, servicing the callbacks
