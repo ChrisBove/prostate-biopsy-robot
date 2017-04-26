@@ -27,12 +27,15 @@ def isomorphic(x):
 
 def isFeasible(x, y, z):
     d = math.sqrt(math.pow(x, 2) + math.pow(y, 2))
-    if (math.pow(d, 2) < math.pow(r, 2)):
-    	z_tip = math.sqrt(math.pow(r, 2) - math.pow(d, 2))
+    print x
+    print y
+    print z
+    if (math.pow(d, 2) <= math.pow(r, 2)):
+    	z_tip = math.sqrt(math.pow(r, 2) - math.pow(d-r, 2))
         print z_tip
         print z
     else:
-	return True
+        return True
     if (z_tip < z):
         return True
     return False

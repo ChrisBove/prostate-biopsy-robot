@@ -66,6 +66,7 @@ class DynamicModel(object):
             Update the S state
             u1 is linear velolicy
             u2 is the angular velocity
+
            """
         l2 =  0.023775
         state = self._s_state
@@ -193,7 +194,7 @@ class DynamicModel(object):
         self._s_state =  np.array( [[1,0,0,0],[0,1,0,0],[0,0,1,0],[0,0,0,1]])
         self._q_state = np.asmatrix(np.zeros((self._N, 1)))
         self._n = np.zeros((3,1))
-        
+
     def get_needle_forces(self):
         """
             Calulates the force acting on the needle tip
