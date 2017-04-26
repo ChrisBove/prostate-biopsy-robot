@@ -42,20 +42,24 @@ def poseFeedbackCallback(data):
     #convert yaw to degrees
     # theta = math.degrees(yaw)
 
-    # find the desired steering angle
-    thetaTarget, error = SteeringAngle([goalPoint.point.x, goalPoint.point.y, goalPoint.point.z], [data.pose.position.x, data.pose.position.y, data.pose.position.z, roll, pitch, yaw])
+    if not feedbackPose.pose.position.x >= goalPoint.point.x:
 
-    # How far off are we?
-    thetaError = thetaTarget - roll
+        # find the desired steering angle
+        thetaTarget, error = SteeringAngle([goalPoint.point.x, goalPoint.point.y, goalPoint.point.z], [data.pose.position.x, data.pose.position.y, data.pose.position.z, roll, pitch, yaw])
 
-    rospy.loginfo(rospy.get_caller_id() + " %s", thetaError)
+        # How far off are we?
+        thetaError = thetaTarget - roll
 
-    # proportional gain
-    Kp = 1.0
-    Kd = 1.0
+        rospy.loginfo(rospy.get_caller_id() + " %s", thetaError)
 
-    # This is actually just a P controller right now
-    publishTwist(0.001, Kp*thetaError)
+        # proportional gain
+        Kp = 1.0
+        Kd = 1.0
+
+        # This is actually just a P controller right now
+        publishTwist(0.001, Kp*thetaError)
+    else:
+        rospy.loginfo(rospy.get_caller_id() + " Arrived at the goal!")
 
 
 def publishReset():
