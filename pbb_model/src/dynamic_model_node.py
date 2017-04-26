@@ -18,6 +18,9 @@ def resetCallback(data):
     global model
     model.reset()
 
+    twist = Twist()
+    twistCallback(twist)
+
     # TODO reset the dynamic model
 
 def twistCallback(data):

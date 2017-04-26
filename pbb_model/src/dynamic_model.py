@@ -43,17 +43,19 @@ class DynamicModel(object):
 
         """Updates the systems"""
 
-        self.update_depth(u1, dt)
+        # check if inputs are 0
+        if (u1 != 0 and u2 != 0): 
+            self.update_depth(u1, dt)
 
-        A = self.get_Amat(u1)
-        B = self.get_Bmat(u1)
-        C = self.get_Cmat(A)
-        D = self.get_Dmat(B)
+            A = self.get_Amat(u1)
+            B = self.get_Bmat(u1)
+            C = self.get_Cmat(A)
+            D = self.get_Dmat(B)
 
 
-        (self._n, self._s_state) = self.update_S(u1, u2, C, D, dt)
+            (self._n, self._s_state) = self.update_S(u1, u2, C, D, dt)
 
-        self._q_state = A * self._q_state + B * u2
+            self._q_state = A * self._q_state + B * u2
         #print self._q_state
         return self._n
 
