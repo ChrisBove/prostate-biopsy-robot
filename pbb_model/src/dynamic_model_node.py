@@ -4,10 +4,15 @@
 """
 
 import rospy, tf, numpy, math
-from geometry_msgs.msg import Twist, PoseStamped
+from geometry_msgs.msg import Twist, PoseStamped, PointStamped
 from std_msgs.msg import Bool
 from tf.transformations import euler_from_quaternion
 import dynamic_model
+
+def startCallback(data):
+    """This callback will fire very frequently when the start marker is dragged"""
+    global startPoint
+    startPoint = data
 
 def resetCallback(data):
     """This callback will occur when reset robot is request """
@@ -44,9 +49,9 @@ def twistCallback(data):
     pose.header.frame_id = "gelatin"
 #     pose.header.frame_id = data.header.frame_id
 
-    pose.pose.position.x = n[2]
-    pose.pose.position.y = n[1]
-    pose.pose.position.z = n[0]
+    pose.pose.position.x = n[2] + startPoint.point.x
+    pose.pose.position.y = n[1] + startPoint.point.y
+    pose.pose.position.z = n[0] + startPoint.point.z
 
     pose.pose.orientation.w = 1.0
 
@@ -60,6 +65,9 @@ if __name__ == '__main__':
     rospy.init_node('dynamic_model_node')
     
     global posePub
+
+    global startPoint
+    startPoint = PointStamped()
     
     # setup the dynamic model
     global model
@@ -71,6 +79,7 @@ if __name__ == '__main__':
     # setup the subscribers to the interactive marker Point topics
     rospy.Subscriber("reset_robot", Bool, resetCallback, queue_size=1)
     rospy.Subscriber("cmd_velocity", Twist, twistCallback, queue_size=1)
+    rospy.Subscriber("start_point", PointStamped, startCallback, queue_size=1)
     
     # this just keeps the node alive, servicing the callbacks
     rospy.spin()
