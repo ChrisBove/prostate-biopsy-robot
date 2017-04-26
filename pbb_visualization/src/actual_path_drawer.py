@@ -6,6 +6,14 @@
 import rospy, tf, numpy, math
 from geometry_msgs.msg import PoseStamped
 from visualization_msgs.msg import Marker
+from std_msgs.msg import Bool
+
+def resetCallback(data):
+    """This callback will occur when reset robot is request """
+    rospy.loginfo(rospy.get_caller_id() + " got reset call %s", data) 
+    global line
+    del line.points[:]
+
 
 def setupMarker():
     global line
@@ -55,6 +63,7 @@ if __name__ == '__main__':
     
     # setup the subscribers to the interactive marker Point topics
     rospy.Subscriber("needle_tip_pose", PoseStamped, poseCallback, queue_size=10)
+    rospy.Subscriber("reset_robot", Bool, resetCallback, queue_size=1)
 
     # this just keeps the node alive, servicing the callbacks
     rospy.spin()
