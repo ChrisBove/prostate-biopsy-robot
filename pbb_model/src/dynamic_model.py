@@ -14,7 +14,7 @@ class DynamicModel(object):
 
     def __init__(self):
 
-        self._l = 4
+        self._l = .04
 
         self._N = 4
         self._P = np.asmatrix( (2.0 / self._l) * np.ones((self._N, 1)))
@@ -25,9 +25,10 @@ class DynamicModel(object):
         self._G = 1.841210  # shear mo(dulus
         self._J = 1.5962 * 10**(-14)  # polar momemoment Interia
         self._pho = 6.453
-        self._b = 10  # coef of friction
-        self._beta = 4.753 * 10**(-3)
-        self._kappa = 1.3698630137  # kappa
+        self._b = 0.01  # coef of friction
+        self._beta = 4.753 * 10**(-5)
+        phi = 0.17767451785
+        self._kappa =  m.tan(phi) / self._l  # kappa
 
         self._Cl = np.ones((1, self._N))
         for ii in xrange(self._N):
@@ -44,7 +45,8 @@ class DynamicModel(object):
         """Updates the systems"""
 
         # check if inputs are 0
-        if not ((u1 == 0.0) and (u2 == 0.0)): 
+        if (u1 != 0.0 and u2 != 0.0):
+            print "I didn't get zeros"
             self.update_depth(u1, dt)
 
             A = self.get_Amat(u1)
@@ -70,6 +72,8 @@ class DynamicModel(object):
             u2 is the angular velocity
 
            """
+
+
         l2 =  0.023775
         state = self._s_state
         # this are the unit vectors to move it into the right frame
@@ -81,12 +85,11 @@ class DynamicModel(object):
         V1_hat = np.vstack((V1_hat,np.array([0,0,0,0])))
         V2_hat = np.concatenate((self.isomorphic(V2[3:6]),V2[0:3]), axis=1)
         V2_hat = np.vstack((V2_hat,np.array([0,0,0,0])))
-        compinsation  =  np.asscalar (C*self._q_state + D*u2)
+        compinsation  = np.asscalar (C*self._q_state + D*u2)
         #print  "real input ",  compinsation
         new_state = state[:, :].dot(expm(( u1*V1_hat +   compinsation*V2_hat) * dt))
         temp = np.array([new_state])
         n = ((temp[0, 0:3, 0:3] * l2).dot(e3) + (temp[0, 0:3, 3]).reshape(3, 1))
-
         return (n, new_state)
 
     def isomorphic(self, x):
