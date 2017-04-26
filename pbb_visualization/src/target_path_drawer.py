@@ -25,17 +25,12 @@ def isomorphic(x):
 		[-x.item(1), x.item(0), 0]])
 
 
-def isFeasible(x, y, z):
-    d = math.sqrt(math.pow(x, 2) + math.pow(y, 2))
-    print x
-    print y
-    print z
-    if (math.pow(d, 2) <= math.pow(r, 2)):
+def isFeasible(x0,y0,z0,x, y, z):
+    d = math.sqrt(math.pow(x-x0, 2) + math.pow(y-y0, 2))
+    if (math.pow(d-r, 2) <= math.pow(r, 2)):
     	z_tip = math.sqrt(math.pow(r, 2) - math.pow(d-r, 2))
-        print z_tip
-        print z
     else:
-        return True
+        return False
     if (z_tip < z):
         return True
     return False
@@ -58,10 +53,10 @@ def kinematicModel(u1, u2, T, state):
     return (n, new_state)
 
 
-def planPath(x, y, z):
+def planPath(x0,y0,z0,x, y, z):
     path = []
 
-    if (isFeasible(x, y, z) is False):
+    if (isFeasible(x0,y0,z0,x, y, z) is False):
         print "Not Feasible"
         return path
     else:
@@ -69,12 +64,12 @@ def planPath(x, y, z):
 	# Calculate initial angle
     angle = math.atan2(y,x)
         # Create initial state which is rotated by 90 degrees
-    state = np.array([[math.cos(angle+math.pi/2),-math.sin(angle+math.pi/2),0,0],
-			  [math.sin(angle+math.pi/2),math.cos(angle+math.pi/2),0,0],
-			  [0,	0,	1,	0],
+    state = np.array([[math.cos(angle+math.pi/2),-math.sin(angle+math.pi/2),0,x0],
+			  [math.sin(angle+math.pi/2),math.cos(angle+math.pi/2),0,y0],
+			  [0,	0,	1,	z0],
 			  [0,	0,	0,	1]])
 	# Calculate distance between the center of the circle and the goal
-    d_c = math.sqrt(math.pow(abs(x)-r,2)+math.pow(abs(y)-r,2)+math.pow(z,2))
+    d_c = math.sqrt(math.pow(abs(x-x0)-r,2)+math.pow(abs(y-y0)-r,2)+math.pow(z-z0,2))
 	# Calculate length of line tangent to circle
     d_thres = math.sqrt(math.pow(d_c,2)-math.pow(r,2))
     t = 0.02
@@ -121,13 +116,14 @@ def goalCallback(data):
 
     # add lines below to keep adding intermediate points
 
-    path = planPath(data.point.z, data.point.y, data.point.x)
+    path = planPath(p.z, p.y, p.x,data.point.z, data.point.y, data.point.x)
 
-    for i in path:
-	p_local = Point(i[2],i[1],i[0])
-    	line.points.append(p_local)
+    if not (len(path) == 0):
+        for i in path:
+            p_local = Point(i[2],i[1],i[0])
+            line.points.append(p_local)
 
-    markerPub.publish(line)
+        markerPub.publish(line)
 
 
 def startCallback(data):
